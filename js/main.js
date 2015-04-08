@@ -1,4 +1,4 @@
-var gmarkers = []; 
+	var gmarkers = []; 
     	var points = [];
     	var map = null;
 
@@ -44,3 +44,19 @@ var gmarkers = [];
    
     	  });
 	}
+
+        function createMarker(latlng, marker_number) {
+          var html = "Persona "+marker_number;
+          var marker = new google.maps.Marker({
+            position: latlng,
+            map: map,
+            zIndex: Math.round(latlng.lat()*-100000)<<5
+          });
+
+          google.maps.event.addListener(marker, 'click', function() {
+            var contentString = html + "<br>"+marker.getPosition().toUrlValue()+"<br><a href='javascript:removeMarker(new google.maps.LatLng("+marker.getPosition().toUrlValue()+"));'>Borrar Persona</a>";
+            infowindow.setContent(contentString); 
+            infowindow.open(map,marker);
+          });
+          return marker;
+        }
