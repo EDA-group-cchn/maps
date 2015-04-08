@@ -8,16 +8,16 @@
      	});
 		
 	function initialize() {
-  		directionsService = new google.maps.DirectionsService();
-		directionsRenderer = new google.maps.DirectionsRenderer();
+  		  directionsService = new google.maps.DirectionsService();
+			  directionsRenderer = new google.maps.DirectionsRenderer();
 		var puntosrandom = document.getElementById("end").value ;		  
-		var mapOptions = {
-			center: {lat: -16.38, lng: -71.53},
+        	var myOptions = {
+    			center: {lat: -16.38, lng: -71.53},
 			zoom: 14
-		};
+  		  }
 
-		map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
-	  	directionsRenderer.setMap(map);
+        	map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
+  			directionsRenderer.setMap(map);
 
  
  	google.maps.event.addListenerOnce(map, 'bounds_changed', function() {
