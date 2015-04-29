@@ -29,27 +29,31 @@
 	     	var latSpan = northEast.lat() - southWest.lat();
 		map.setCenter(map.getCenter());
 	     	map.setZoom(map.getZoom()-1);
+
+		var imageP = 'icons/person.png';
+		var imageB = 'icons/bus.png';
+		var imageS = 'icons/stop.png';
      	
 		for (var i = 0; i < puntosrandom ; i++) {  
-	       	  	var point = new google.maps.LatLng(southWest.lat() + latSpan * Math.random(),
-		           southWest.lng() + lngSpan * Math.random());
+	       	  	 var point = new google.maps.LatLng(southWest.lat() + latSpan * Math.random(),
+		         southWest.lng() + lngSpan * Math.random());
 	       		 points.push(point);
-		       	 var marker = createMarkerPerson(point, i);
+		       	 var marker = createMarker(point, i, imageP);
 		       	 gmarkers.push(marker);
 		}
 		for (var i = 0; i < puntosrandom ; i++) {  
-	       	  	var point = new google.maps.LatLng(southWest.lat() + latSpan * Math.random(),
-		           southWest.lng() + lngSpan * Math.random());
+	       	  	 var point = new google.maps.LatLng(southWest.lat() + latSpan * Math.random(),
+		         southWest.lng() + lngSpan * Math.random());
 	       		 points.push(point);
-		       	 var marker = createMarkerBus(point, i);
+		       	 var marker = createMarker(point, i, imageB);
 		       	 gmarkers.push(marker);
 		}
 
 		for (var i = 0; i < puntosrandom ; i++) {  
-	       	  	var point = new google.maps.LatLng(southWest.lat() + latSpan * Math.random(),
-		           southWest.lng() + lngSpan * Math.random());
+	       	  	 var point = new google.maps.LatLng(southWest.lat() + latSpan * Math.random(),
+		         southWest.lng() + lngSpan * Math.random());
 	       		 points.push(point);
-		       	 var marker = createMarkerStop(point, i);
+		       	 var marker = createMarker(point, i,imageB);
 		       	 gmarkers.push(marker);
 		}
 
@@ -60,56 +64,11 @@
     	  });
 	}
 
-        function createMarkerPerson(latlng, marker_number) {
-          var html = "Persona "+marker_number;
-	  var image = 'icons/person.png';
+        function createMarker(latlng, marker_number, image) {
           var marker = new google.maps.Marker({
             position: latlng,
             map: map,
 	    icon: image,
-            zIndex: Math.round(latlng.lat()*-100000)<<5
-          });
-
-          google.maps.event.addListener(marker, 'click', function() {
-	  var contentString = html + "<br>"+marker.getPosition().toUrlValue()+"<br><a href='javascript:removeMarker(new google.maps.LatLng("+marker.getPosition().toUrlValue()+"));'>Borrar Persona</a>";
-            infowindow.setContent(contentString); 
-            infowindow.open(map,marker);
-          });
-          return marker;
-        }
-
-	function createMarkerBus(latlng, marker_number) {
-          var html = "Bus "+marker_number;
-	  var image = 'icons/bus.png';
-          var marker = new google.maps.Marker({
-            position: latlng,
-            map: map,
-	    icon: image,
-            zIndex: Math.round(latlng.lat()*-100000)<<5
-          });
-
-          google.maps.event.addListener(marker, 'click', function() {
-	  var contentString = html + "<br>"+marker.getPosition().toUrlValue()+"<br><a href='javascript:removeMarker(new google.maps.LatLng("+marker.getPosition().toUrlValue()+"));'>Borrar Bus</a>";
-            infowindow.setContent(contentString); 
-            infowindow.open(map,marker);
-          });
-          return marker;
-        }
- 
-	function createMarkerStop(latlng, marker_number) {
-          var html = "Bus "+marker_number;
-	  var image = 'icons/stop.png';
-          var marker = new google.maps.Marker({
-            position: latlng,
-            map: map,
-	    icon: image,
-            zIndex: Math.round(latlng.lat()*-100000)<<5
-          });
-
-          google.maps.event.addListener(marker, 'click', function() {
-	  var contentString = html + "<br>"+marker.getPosition().toUrlValue()+"<br><a href='javascript:removeMarker(new google.maps.LatLng("+marker.getPosition().toUrlValue()+"));'>Borrar Stop</a>";
-            infowindow.setContent(contentString); 
-            infowindow.open(map,marker);
           });
           return marker;
         }
