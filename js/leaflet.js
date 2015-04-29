@@ -1,3 +1,39 @@
+function buildIcon(name) {
+    return L.icon({
+        iconUrl: 'icons/' + name + '.png',
+        iconSize: [40, 40]
+    });
+}
+
+function buildMarker(point, icon) {
+    return L.marker(point, {
+        icon: icon
+    });
+}
+
+function loadPoints(map, description) {
+    for (var type in description) {
+        var current = description[type];
+        current.icon = buildIcon(type);
+        current.markers = [];
+        for (var i = 0; i < current.quantity; ++i) {
+            var marker = buildMarker(
+                randomPoint(map.getBounds()), current.icon);
+            current.markers.push(marker);
+            marker.addTo(map);
+        }
+        if (current.move) {
+            for (var i = 0; i < current.markers.length; ++i) {
+                setInterval(function (marker) {
+                    marker.setLatLng(
+                        randomMove(marker.getLatLng())
+                    )
+                }, 1000, current.markers[i]);
+            }
+        }
+    }
+}
+
 function initialize(event) {
     var mapboxAttribution = '<a href="https://www.mapbox.com/about/maps/" target="_blank">© Mapbox © OpenStreetMap</a>';
     var baseLayers = {
@@ -16,6 +52,13 @@ function initialize(event) {
     };
     var map = L.map('map-canvas', mapOptions);
     L.control.layers(baseLayers).addTo(map);
+
+    var description = {
+        bus: { quantity: 5, move: true },
+        person: { quantity: 20, move: false },
+        stop: { quantity: 5, move: false }
+    };
+    loadPoints(map, description);
 }
 
 document.addEventListener('DOMContentLoaded', initialize);
