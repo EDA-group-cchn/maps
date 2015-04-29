@@ -34,7 +34,22 @@
 	       	  	var point = new google.maps.LatLng(southWest.lat() + latSpan * Math.random(),
 		           southWest.lng() + lngSpan * Math.random());
 	       		 points.push(point);
-		       	 var marker = createMarker(point, i);
+		       	 var marker = createMarkerPerson(point, i);
+		       	 gmarkers.push(marker);
+		}
+		for (var i = 0; i < puntosrandom ; i++) {  
+	       	  	var point = new google.maps.LatLng(southWest.lat() + latSpan * Math.random(),
+		           southWest.lng() + lngSpan * Math.random());
+	       		 points.push(point);
+		       	 var marker = createMarkerBus(point, i);
+		       	 gmarkers.push(marker);
+		}
+
+		for (var i = 0; i < puntosrandom ; i++) {  
+	       	  	var point = new google.maps.LatLng(southWest.lat() + latSpan * Math.random(),
+		           southWest.lng() + lngSpan * Math.random());
+	       		 points.push(point);
+		       	 var marker = createMarkerStop(point, i);
 		       	 gmarkers.push(marker);
 		}
 
@@ -45,16 +60,54 @@
     	  });
 	}
 
-        function createMarker(latlng, marker_number) {
+        function createMarkerPerson(latlng, marker_number) {
           var html = "Persona "+marker_number;
+	  var image = 'icons/person.png';
           var marker = new google.maps.Marker({
             position: latlng,
             map: map,
+	    icon: image,
             zIndex: Math.round(latlng.lat()*-100000)<<5
           });
 
           google.maps.event.addListener(marker, 'click', function() {
-            var contentString = html + "<br>"+marker.getPosition().toUrlValue()+"<br><a href='javascript:removeMarker(new google.maps.LatLng("+marker.getPosition().toUrlValue()+"));'>Borrar Persona</a>";
+	  var contentString = html + "<br>"+marker.getPosition().toUrlValue()+"<br><a href='javascript:removeMarker(new google.maps.LatLng("+marker.getPosition().toUrlValue()+"));'>Borrar Persona</a>";
+            infowindow.setContent(contentString); 
+            infowindow.open(map,marker);
+          });
+          return marker;
+        }
+
+	function createMarkerBus(latlng, marker_number) {
+          var html = "Bus "+marker_number;
+	  var image = 'icons/bus.png';
+          var marker = new google.maps.Marker({
+            position: latlng,
+            map: map,
+	    icon: image,
+            zIndex: Math.round(latlng.lat()*-100000)<<5
+          });
+
+          google.maps.event.addListener(marker, 'click', function() {
+	  var contentString = html + "<br>"+marker.getPosition().toUrlValue()+"<br><a href='javascript:removeMarker(new google.maps.LatLng("+marker.getPosition().toUrlValue()+"));'>Borrar Bus</a>";
+            infowindow.setContent(contentString); 
+            infowindow.open(map,marker);
+          });
+          return marker;
+        }
+ 
+	function createMarkerStop(latlng, marker_number) {
+          var html = "Bus "+marker_number;
+	  var image = 'icons/stop.png';
+          var marker = new google.maps.Marker({
+            position: latlng,
+            map: map,
+	    icon: image,
+            zIndex: Math.round(latlng.lat()*-100000)<<5
+          });
+
+          google.maps.event.addListener(marker, 'click', function() {
+	  var contentString = html + "<br>"+marker.getPosition().toUrlValue()+"<br><a href='javascript:removeMarker(new google.maps.LatLng("+marker.getPosition().toUrlValue()+"));'>Borrar Stop</a>";
             infowindow.setContent(contentString); 
             infowindow.open(map,marker);
           });
