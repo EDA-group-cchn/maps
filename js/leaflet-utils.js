@@ -25,7 +25,7 @@ function latLngFromGoogle(latLng) {
 function buildMarker(point, icon, move) {
     var marker;
     if (move) {
-        marker = L.animatedMarker([point], { icon: icon, autoStart: false });
+        marker = L.animatedMarker([point], { icon: icon, autoStart: false, distance: 108 });
     } else {
         marker = L.marker(point, { icon: icon });
     }
