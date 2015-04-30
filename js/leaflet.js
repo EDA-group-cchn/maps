@@ -11,7 +11,38 @@ function buildMarker(point, icon) {
     });
 }
 
+var directionsService = new google.maps.DirectionsService();
+
+function latLngToGoogle(latLng) {
+    return new google.maps.LatLng(latLng.lat, latLng.lng);
+}
+
+function latLngFromGoogle(latLng) {
+    return {
+        lat: latLng.lat(),
+        lng: latLng.lng()
+    };
+}
+
 function loadPoints(map, description) {
+    var moveMarker = function (result, status) {
+        var route = result.routes[0];
+        var latlngs = [];
+        var polyline;
+        for (var i = 0; i < route.overview_path.length; ++i) {
+            latlngs.push(latLngFromGoogle(route.overview_path[i]));
+        }
+        polyline = L.polyline(latlngs);
+        polyline.addTo(map);
+        this.path = polyline.getLatLngs();
+        var interval = setInterval(function (marker) {
+            if (marker.id_pos < marker.path.length) {
+                marker.ui.setLatLng(marker.path[marker.id_pos++]);
+            } else {
+                clearInterval(interval);
+            }
+        }, 1000, this)
+    };
     for (var type in description) {
         var current = description[type];
         current.icon = buildIcon(type);
@@ -19,16 +50,20 @@ function loadPoints(map, description) {
         for (var i = 0; i < current.quantity; ++i) {
             var marker = buildMarker(
                 randomPoint(map.getBounds()), current.icon);
-            current.markers.push(marker);
+            current.markers.push({
+                ui: marker,
+                id_pos: 0
+            });
             marker.addTo(map);
         }
         if (current.move) {
             for (var i = 0; i < current.markers.length; ++i) {
-                setInterval(function (marker) {
-                    marker.setLatLng(
-                        randomMove(marker.getLatLng())
-                    )
-                }, 1000, current.markers[i]);
+                var request = {
+                    origin: latLngToGoogle(current.markers[i].ui.getLatLng()),
+                    destination: latLngToGoogle(randomMove(current.markers[i].ui.getLatLng())),
+                    travelMode: google.maps.TravelMode.DRIVING
+                };
+                directionsService.route(request, moveMarker.bind(current.markers[i]));
             }
         }
     }
