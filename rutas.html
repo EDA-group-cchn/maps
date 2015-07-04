@@ -14,16 +14,14 @@
     var map;
     
     function initialize() {
-      directionsDisplay = new google.maps.DirectionsRenderer();
-      var melbourne = new google.maps.LatLng(-37.813187, 144.96298);
+      var arequipa = new google.maps.LatLng(-16.39, -71.52);
       var myOptions = {
         zoom:12,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
-        center: melbourne
+        center: arequipa
       }
 
       map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-      directionsDisplay.setMap(map);
     }
 
     function calcRoute() {
@@ -48,7 +46,12 @@
         };
         directionsService.route(request, function(response, status) {
           if (status == google.maps.DirectionsStatus.OK) {
-            directionsDisplay.setDirections(response);
+            var polyline = new google.maps.Polyline({
+              path: response.routes[0].overview_path,
+              strokeColor: '#FF0000',
+              strokeWeight: 2
+            });
+            polyline.setMap(map);
             distanceInput.value = response.routes[0].legs[0].distance.value / 1000;
             console.log(distanceInput.value);
           }
