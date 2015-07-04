@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Waypoints in directions</title>
+    <style>
+      html, body, #map-canvas {
+        height: 100%;
+        margin: 0px;
+        padding: 0px
+      }
+      #panel {
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        margin-left: -180px;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+      }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+    <script type="text/javascript">
+
+    var directionsService = new google.maps.DirectionsService();
+    var num, map, data;
+    var requestArray = [], renderArray = [];
+
+    var jsonArray = {
+        "route 1": ["(-16.367961,-71.466435)","(-16.392064,-71.557241)","(-16.442683,-71.460978)","(-16.378863,-71.57026)","(-16.399676,-71.596193)",
+                      "(-16.37063,-71.537373)","(-16.36223,-71.530432)","(-16.453058,-71.513354)","(-16.403342,-71.594619)","(-16.436385,-71.568334)"],
+        "route 2": ["(-16.367548,-71.596287)","(-16.451126,-71.583197)","(-16.399574,-71.525463)","(-16.374906,-71.557202)","(-16.452622,-71.605089)",
+                      "(-16.414226,-71.506093)","(-16.430059,-71.524842)","(-16.363286,-71.502316)","(-16.443983,-71.518836)","(-16.382835,-71.574262)"],
+        "route 3": ["(-16.410854,-71.594699)","(-16.391875,-71.525666)","(-16.418143,-71.56598)","(-16.455981,-71.600357)","(-16.429039,-71.507257)",
+                      "(-16.377483,-71.581925)","(-16.408326,-71.533382)","(-16.372441,-71.591209)","(-16.408024,-71.531956)","(-16.378464,-71.60597)"]
+    }
+        
+    var colourArray = ['navy', 'grey', 'fuchsia', 'black', 'white', 'lime', 'maroon', 'purple', 'aqua', 'red', 'green', 'silver', 'olive', 'blue', 'yellow', 'teal'];
+
+    function generateRequests(){
+
+        requestArray = [];
+
+        for (var route in jsonArray){
+            
+            var waypts = [];
+            
+          
+            var start, finish
+            
+            var lastpoint
+
+            data = jsonArray[route]
+
+            limit = data.length
+            for (var waypoint = 0; waypoint < limit; waypoint++) {
+                if (data[waypoint] === lastpoint){
+                    continue;
+                }
+                
+                lastpoint = data[waypoint]
+
+                waypts.push({
+                    location: data[waypoint],
+                    stopover: true
+                });
+            }
+
+            start = (waypts.shift()).location;
+            finish = waypts.pop();
+            if(finish === undefined){
+                finish = start;
+            } else {
+                finish = finish.location;
+            }
+
+            var request = {
+                origin: start,
+                destination: finish,
+                waypoints: waypts,
+                travelMode: google.maps.TravelMode.DRIVING
+            };
+
+            requestArray.push({"route": route, "request": request});
+        }
+
+        processRequests();
+    }
+
+    function processRequests(){
+
+        var i = 0;
+
+        function submitRequest(){
+            directionsService.route(requestArray[i].request, directionResults);
+        }
+
+        function directionResults(result, status) {
+            if (status == google.maps.DirectionsStatus.OK) {
+                
+                renderArray[i] = new google.maps.DirectionsRenderer();
+                renderArray[i].setMap(map);
+
+                renderArray[i].setOptions({
+                    preserveViewport: true,
+                    suppressInfoWindows: true,
+                    polylineOptions: {
+                        strokeWeight: 4,
+                        strokeOpacity: 0.8,
+                        strokeColor: colourArray[i]
+                    },
+                    markerOptions:{
+                        icon:{
+                            path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+                            scale: 3,
+                            strokeColor: colourArray[i]
+                        }
+                    }
+                });
+
+                renderArray[i].setDirections(result);
+                nextRequest();
+            }
+
+        }
+
+        function nextRequest(){
+            i++;
+            if(i >= requestArray.length){
+                return;
+            }
+            submitRequest();
+        }
+
+        submitRequest();
+    }
+
+    function init() {
+
+        var mapOptions = {
+            center: new google.maps.LatLng(-16.4040523,-71.5390114),
+            zoom: 13,
+            mapTypeControl: false,
+            streetViewControl: false,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+            
+        map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+        generateRequests()
+    }
+
+    google.maps.event.addDomListener(window, 'load', init);
+</script>
+  </head>
+  <body>
+    <div id="map-canvas" ></div>
+       <input  onclick="init();">
+    </div>
+    <div id="directions_panel" style="margin:20px;background-color:#FFEE77;"></div>
+    </div>
+  </body>
+</html>
