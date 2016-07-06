@@ -5,30 +5,38 @@ function buildIcon(name) {
     });
 }
 
-function buildMarker(point, icon) {
-    return L.marker(point, {
-        icon: icon
-    });
-}
+var directionsService = new google.maps.DirectionsService();
 
 function loadPoints(map, description) {
+    var moveMarker = function (result, status) {
+        var route = result.routes[0];
+        var latlngs = [];
+        var polyline;
+        for (var i = 0; i < route.overview_path.length; ++i) {
+            latlngs.push(latLngFromGoogle(route.overview_path[i]));
+        }
+        polyline = L.polyline(latlngs);
+        polyline.addTo(map);
+        this.setLine(latlngs);
+        this.start();
+    };
+
     for (var type in description) {
         var current = description[type];
         current.icon = buildIcon(type);
         current.markers = [];
         for (var i = 0; i < current.quantity; ++i) {
             var marker = buildMarker(
-                randomPoint(map.getBounds()), current.icon);
+                randomPoint(map.getBounds()), current.icon, current.move);
             current.markers.push(marker);
             marker.addTo(map);
-        }
-        if (current.move) {
-            for (var i = 0; i < current.markers.length; ++i) {
-                setInterval(function (marker) {
-                    marker.setLatLng(
-                        randomMove(marker.getLatLng())
-                    )
-                }, 1000, current.markers[i]);
+            if (current.move) {
+                var request = {
+                    origin: latLngToGoogle(current.markers[i].getLatLng()),
+                    destination: latLngToGoogle(randomMove(current.markers[i].getLatLng())),
+                    travelMode: google.maps.TravelMode.DRIVING
+                };
+                directionsService.route(request, moveMarker.bind(current.markers[i]));
             }
         }
     }
@@ -54,9 +62,9 @@ function initialize(event) {
     L.control.layers(baseLayers).addTo(map);
 
     var description = {
-        bus: { quantity: 5, move: true },
         person: { quantity: 20, move: false },
-        stop: { quantity: 5, move: false }
+        stop: { quantity: 5, move: false },
+        bus: { quantity: 5, move: true }
     };
     loadPoints(map, description);
 }

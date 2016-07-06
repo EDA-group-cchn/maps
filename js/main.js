@@ -29,12 +29,31 @@
 	     	var latSpan = northEast.lat() - southWest.lat();
 		map.setCenter(map.getCenter());
 	     	map.setZoom(map.getZoom()-1);
+
+		var imageP = 'icons/person.png';
+		var imageB = 'icons/bus.png';
+		var imageS = 'icons/stop.png';
      	
 		for (var i = 0; i < puntosrandom ; i++) {  
-	       	  	var point = new google.maps.LatLng(southWest.lat() + latSpan * Math.random(),
-		           southWest.lng() + lngSpan * Math.random());
+	       	  	 var point = new google.maps.LatLng(southWest.lat() + latSpan * Math.random(),
+		         southWest.lng() + lngSpan * Math.random());
 	       		 points.push(point);
-		       	 var marker = createMarker(point, i);
+		       	 var marker = createMarker(point, i, imageP);
+		       	 gmarkers.push(marker);
+		}
+		for (var i = 0; i < puntosrandom ; i++) {  
+	       	  	 var point = new google.maps.LatLng(southWest.lat() + latSpan * Math.random(),
+		         southWest.lng() + lngSpan * Math.random());
+	       		 points.push(point);
+		       	 var marker = createMarker(point, i, imageB);
+		       	 gmarkers.push(marker);
+		}
+
+		for (var i = 0; i < puntosrandom ; i++) {  
+	       	  	 var point = new google.maps.LatLng(southWest.lat() + latSpan * Math.random(),
+		         southWest.lng() + lngSpan * Math.random());
+	       		 points.push(point);
+		       	 var marker = createMarker(point, i,imageB);
 		       	 gmarkers.push(marker);
 		}
 
@@ -45,18 +64,11 @@
     	  });
 	}
 
-        function createMarker(latlng, marker_number) {
-          var html = "Persona "+marker_number;
+        function createMarker(latlng, marker_number, image) {
           var marker = new google.maps.Marker({
             position: latlng,
             map: map,
-            zIndex: Math.round(latlng.lat()*-100000)<<5
-          });
-
-          google.maps.event.addListener(marker, 'click', function() {
-            var contentString = html + "<br>"+marker.getPosition().toUrlValue()+"<br><a href='javascript:removeMarker(new google.maps.LatLng("+marker.getPosition().toUrlValue()+"));'>Borrar Persona</a>";
-            infowindow.setContent(contentString); 
-            infowindow.open(map,marker);
+	    icon: image,
           });
           return marker;
         }
